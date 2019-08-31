@@ -1,0 +1,14 @@
+{%extends 'base.html'%}
+
+{%block title%}
+  add task
+{%endblock%}
+
+{%block body%}
+  <p>add task:</p>
+  <form action="." method="post">
+    {{form.as_p}}
+    {%csrf_token%}
+    <input type="submit" name="" value="post">
+  </form>
+{%endblock%}

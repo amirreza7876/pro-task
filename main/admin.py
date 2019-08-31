@@ -1,3 +1,11 @@
 from django.contrib import admin
+from .models import *
 
-# Register your models here.
+
+@admin.register(SingleTask)
+class SingleTaskAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(GroupTask)
+class GroupTaskAdmin(admin.ModelAdmin):
+    pass
