@@ -1,0 +1,19 @@
+{%extends 'base.html'%}
+
+
+{%block title%}
+  groups
+{%endblock%}
+
+
+{%block body%}
+  {%for group in groups%}
+    <p>{{group.name}}</p>
+    <p>{{group.subject}}</p>
+    {%if group.private%}
+      <a href="{%url 'main:group' group.id%}">need private key</a>
+    {%else%}
+      <a href="{%url 'main:group' group.id%}">join</a>
+    {%endif%}
+  {%endfor%}
+{%endblock%}

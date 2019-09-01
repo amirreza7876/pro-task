@@ -23,14 +23,17 @@ class SingleTask(models.Model):
 
 
 class GroupTask(models.Model):
-    passw = models.CharField(max_length=128)
+    active = models.BooleanField(default=True)
+    private_key = models.CharField(max_length=128, default='0000')
+    public_key = models.CharField(max_length=128, default='1111')
     member = models.ManyToManyField(User, related_name='groups_in')
-    admin = models.ForeignKey(User, on_delete=models.SET_NULL)
+    admin = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=255)
     subject = models.CharField(max_length=355)
+    private = models.BooleanField(default=False)
 
     def __str__(self):
-        return 'group {} by {}'.format(self.name, self.admin)
+        return '{} by {}'.format(self.name, self.admin)
 
     def get_absolute_url(self):
         return reverse('main:group', args=[self.id])
