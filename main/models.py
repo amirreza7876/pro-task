@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.urls import reverse
 
 
@@ -22,18 +22,31 @@ class SingleTask(models.Model):
         ordering = ('-created_date',)
 
 
-class GroupTask(models.Model):
+class Company(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    owner_email = models.EmailField(verbose_name='E-mail',max_length=256, blank=True)
+    name = models.CharField(verbose_name='Company Name', max_length=256, unique=True)
+    description = models.CharField(max_length=512)
     active = models.BooleanField(default=True)
-    private_key = models.CharField(max_length=128, default='0000')
-    public_key = models.CharField(max_length=128, default='1111')
-    member = models.ManyToManyField(User, related_name='groups_in')
-    admin = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    name = models.CharField(max_length=255)
-    subject = models.CharField(max_length=355)
-    private = models.BooleanField(default=False)
+    created_on = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        permissions = (
+            ('add_singletask', 'can add task'),
+            ('delete_singletask', 'can delete task'),
+            ('change_singletask', ' can edit task')
+        )
 
     def __str__(self):
-        return '{} by {}'.format(self.name, self.admin)
+        return '{} by {}'.format(self.name, self.owner.username)
 
     def get_absolute_url(self):
-        return reverse('main:group', args=[self.id])
+        return reverse('main:company_detail', id=self.id)
+
+
+class CompanyGroup(models.Model):
+    member = models.ManyToManyField(User, related_name='group')
+    admin = models.ForeignKey(Company, related_name='company_groups', on_delete=models.SET_NULL, null=True)
+    private_key = models.CharField(max_length=128, default='0000')
+    active = models.BooleanField(default=True)
+    admin_key = models.CharField(max_length=128, default='1111')

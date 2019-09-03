@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required, permission_required
 from .models import *
-from .forms import CreateTaskForm, EditTaskForm, GroupJoinForm
+from .forms import *
 from django.urls import reverse_lazy
 
 
@@ -45,25 +45,21 @@ def edit_task(request, id):
                                                    'form': edit_form})
 
 
-def group_list(request):
-    groups = GroupTask.objects.filter(active=True)
-    return render(request, 'main/group/list.html', {'groups': groups})
-
-
-@login_required
-def group_detail(request, id):
-    group = get_object_or_404(GroupTask, id=id)
+def company_register(request):
     if request.method == 'POST':
-        if request.user != group.member:
-            join_form = GroupJoinForm(request.POST)
-            if join_form.is_valid():
-                if join_form.cleaned_data['private_key'] == group.private_key:
-                    group.member.add(request.user)
-                    return redirect('main:group', id=group.id)
-                else:
-                    return redirect('main:group_list')
-        else:
-            return redirect('main:group', id=group.id)
+        company_form = CompanyCreateForm(request.POST)
+        if company_form.is_valid():
+            new_company = company_form.save(commit=False)
+            new_company.owner = request.user
+            new_company.save()
+            return render(request, 'main/company_registered.html', {'new_company': new_company})
     else:
-        join_form = GroupJoinForm()
-    return render(request, 'main/group/detail.html')
+        company_form = CompanyCreateForm()
+
+    return render(request, 'main/company_registration.html', {'form':company_form})
+
+
+
+def company_detail(request, id):
+    company = get_object_or_404(Company, id=id)
+    return render(request, 'main/company_detail.html', {'company': company})

@@ -1,5 +1,5 @@
 from django import forms
-from .models import SingleTask, GroupTask
+from .models import SingleTask, Company
 
 class CreateTaskForm(forms.ModelForm):
     class Meta:
@@ -12,6 +12,7 @@ class EditTaskForm(forms.ModelForm):
         fields = ('text', 'done', 'user')
         exclude = ('user',)
 
-# TODO:
-class GroupJoinForm(forms.Form):
-    pivate_key = forms.CharField(max_length=128)
+class CompanyCreateForm(forms.ModelForm):
+    class Meta:
+        model = Company
+        fields = ('name', 'owner_email', 'description')

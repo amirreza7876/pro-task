@@ -6,6 +6,12 @@ from .models import *
 class SingleTaskAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(GroupTask)
-class GroupTaskAdmin(admin.ModelAdmin):
+
+@admin.register(CompanyGroup)
+class CompanyGroupAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Company)
+class CompanyAdmin(admin.ModelAdmin):
     pass
