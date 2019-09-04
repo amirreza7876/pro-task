@@ -50,7 +50,7 @@ def company_register(request):
         company_form = CompanyCreateForm(request.POST)
         if company_form.is_valid():
             new_company = company_form.save(commit=False)
-            new_company.owner = request.user
+            new_company.creator = request.user
             new_company.save()
             return render(request, 'main/company_registered.html', {'new_company': new_company})
     else:
@@ -63,3 +63,30 @@ def company_register(request):
 def company_detail(request, id):
     company = get_object_or_404(Company, id=id)
     return render(request, 'main/company_detail.html', {'company': company})
+
+
+@login_required
+def group_create(request):
+    if request.user.co_own.all():
+        if request.method == 'POST':
+            form = CoGroupCreateForm(request.POST)
+            if form.is_valid:
+                new_group = form.save(commit=False)
+                new_group.admin = request.user
+                new_group.save()
+
+                
+                group = CompanyGroup.objects.get(id=new_group.id)
+                group.member.add(request.user)
+                return render(request, 'main/group_created.html', {'group': new_group})
+        else:
+            form = CoGroupCreateForm()
+    else:
+        return redirect('main:company_register')
+    return render(request, 'main/register_group.html', {'form': form})
+
+
+@login_required
+def group_detail(request, id):
+    group = get_object_or_404(CompanyGroup, id=id)
+    return render(request, 'main/group_detail.html', {'group': group})

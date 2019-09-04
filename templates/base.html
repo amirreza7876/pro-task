@@ -15,7 +15,12 @@
           <li>
             <a href="{%url 'account:logout'%}" class="btn btn-danger">Log out</a>
           </li>
-
+          <li>
+            <a href="{%url 'main:group_create'%}">create group</a>
+          </li>
+          <li>
+            <a href="{%url 'main:company_register'%}">register your company</a>
+          </li>
         {%elif not user.is_authenticated%}
           <li>
             <a href="{%url 'account:login'%}" class="btn btn-success ">Login</a>
@@ -24,6 +29,9 @@
             <a href="{%url 'account:register'%}" class="btn btn-success ">Register</a>
           </li>
         {%endif%}
+        <li>
+          <a href="{%url 'main:index'%}">home</a>
+        </li>
         <li {% if section == "people" %}class="selected"{% endif %}>
           <a href="{% url 'account:profile_list' %}">People</a>
         </li>

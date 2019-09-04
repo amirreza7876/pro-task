@@ -3,6 +3,9 @@ from django.contrib.auth.models import User, Group
 from django.urls import reverse
 
 
+User.add_to_class("company_name", models.CharField(max_length=128, null=True, blank=True))
+
+
 class SingleTask(models.Model):
     active = models.BooleanField(default=True)
     done = models.BooleanField(default=False)
@@ -23,8 +26,9 @@ class SingleTask(models.Model):
 
 
 class Company(models.Model):
-    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    owner_email = models.EmailField(verbose_name='E-mail',max_length=256, blank=True)
+    creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    owner = models.ManyToManyField(User, related_name='co_own')
+    creator_email = models.EmailField(verbose_name='E-mail',max_length=256, blank=True)
     name = models.CharField(verbose_name='Company Name', max_length=256, unique=True)
     description = models.CharField(max_length=512)
     active = models.BooleanField(default=True)
@@ -38,15 +42,23 @@ class Company(models.Model):
         )
 
     def __str__(self):
-        return '{} by {}'.format(self.name, self.owner.username)
+        # owners = ", ".join(str(seg) for seg in self.owner.all())
+        return '{} by {}'.format(self.name, self.creator)
 
     def get_absolute_url(self):
         return reverse('main:company_detail', id=self.id)
 
 
 class CompanyGroup(models.Model):
+    name = models.CharField(max_length=128, default=None, null=True)
     member = models.ManyToManyField(User, related_name='group')
-    admin = models.ForeignKey(Company, related_name='company_groups', on_delete=models.SET_NULL, null=True)
+    admin = models.ForeignKey(User, related_name='groups_own', on_delete=models.SET_NULL, null=True)
     private_key = models.CharField(max_length=128, default='0000')
     active = models.BooleanField(default=True)
     admin_key = models.CharField(max_length=128, default='1111')
+
+    def __str__(self):
+        return '{} by {}'.format(self.name, self.admin)
+
+    def get_absolute_url(self):
+        return reverse('main:group_detail', id=self.id)

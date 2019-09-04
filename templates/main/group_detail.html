@@ -1,0 +1,13 @@
+{%extends 'base.html'%}
+
+{%block title%}
+  {{group.name}}
+{%endblock%}
+
+{%block body%}
+  <h3>{{group.name}}</h3>
+  <h4>admin is {{group.admin}}</h4>
+  {%for mem in group.member.all %}
+    <p>{{mem.username}}</p>
+  {%endfor%}
+{%endblock%}

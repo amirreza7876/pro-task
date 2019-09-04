@@ -1,0 +1,10 @@
+{%extends 'base.html'%}
+
+{%block title%}
+  group created
+{%endblock%}
+
+{%block body%}
+  group {{group.id}} created
+  see group <a href="{%url 'main:group_detail' group.id%}">here</a>
+{%endblock%}
