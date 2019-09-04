@@ -10,6 +10,9 @@
   <body>
     <header>
       <ul>
+        <li>
+          <a href="{%url 'main:index'%}">home</a>
+        </li>
         {%if user.is_authenticated%}
         <li>{{user.username}}</li>
           <li>
@@ -19,7 +22,25 @@
             <a href="{%url 'main:group_create'%}">create group</a>
           </li>
           <li>
-            <a href="{%url 'main:company_register'%}">register your company</a>
+            <a href="{%url 'account:dashboard'%}">dashboard</a>
+          </li>
+          <li>
+            <a href="{%url 'main:create_task'%}">add task</a>
+          </li>
+          <li>
+            <a href="{%url 'main:company_register'%}">Register your company</a>
+          </li>
+          <li {% if section == "people" %}class="selected"{% endif %}>
+            <a href="{% url 'account:profile_list' %}">People</a>
+          </li>
+          <li>
+            <a href="{%url 'main:user_groups'%}">my groups</a>
+          </li>
+          <li>
+            <a href="{%url 'main:user_companies'%}">companies i working at</a>
+          </li>
+          <li>
+            <a href="{%url 'account:password_change'%}">change password</a>
           </li>
         {%elif not user.is_authenticated%}
           <li>
@@ -29,18 +50,7 @@
             <a href="{%url 'account:register'%}" class="btn btn-success ">Register</a>
           </li>
         {%endif%}
-        <li>
-          <a href="{%url 'main:index'%}">home</a>
-        </li>
-        <li {% if section == "people" %}class="selected"{% endif %}>
-          <a href="{% url 'account:profile_list' %}">People</a>
-        </li>
-        <li>
-          <a href="{%url 'main:create_task'%}">add task</a>
-        </li>
-        <li>
-          <a href="{%url 'account:password_change'%}">change password</a>
-        </li>
+
       </ul>
 
     </header>

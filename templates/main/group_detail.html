@@ -6,8 +6,22 @@
 
 {%block body%}
   <h3>{{group.name}}</h3>
+  <a href="{%url 'main:add_member' group.id%}">add member</a>
   <h4>admin is {{group.admin}}</h4>
   {%for mem in group.member.all %}
     <p>{{mem.username}}</p>
   {%endfor%}
+  <div class="tasks">
+    {%for task in tasks%}
+    <hr>
+      <p>{{task.done}}</p>
+      {{task.text}}
+      <p>by {{task.user}} in {{task.created_date}}</p>
+      {%if request.user == this_user %}
+        <a href="{%url 'main:single_task' task.id%}">edit</a>
+      {%endif%}
+    {%endfor%}
+  </div>
+  <p><a href="{%url 'main:create_group_task' group.id%}">add task to group</a></p>
+
 {%endblock%}

@@ -1,0 +1,27 @@
+{%extends 'base.html'%}
+
+{%block title%}
+  {{user.username}} dashboard
+{%endblock%}
+
+
+{%block body%}
+  {{user.get_full_name}}'s dashboard
+  <p>links above will be removed from header later...</p>
+  <ul>
+    <li>
+      <a href="{%url 'main:company_register'%}">register your company</a>
+    </li>
+    <li {% if section == "people" %}class="selected"{% endif %}>
+      <a href="{% url 'account:profile_list' %}">People</a>
+    </li>
+    <li>
+      <a href="{%url 'main:user_groups'%}">my groups</a>
+    </li>
+    <li>
+      <a href="{%url 'account:password_change'%}">change password</a>
+    </li>
+  </ul>
+
+
+{%endblock%}

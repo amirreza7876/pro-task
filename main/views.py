@@ -4,7 +4,8 @@ from django.contrib.auth.decorators import login_required, permission_required
 from .models import *
 from .forms import *
 from django.urls import reverse_lazy
-
+from django.http import HttpResponse
+import re
 
 class IndexView(TemplateView):
     template_name = 'main/index.html'
@@ -14,7 +15,6 @@ class IndexView(TemplateView):
 def create_task(request):
     if request.method == 'POST':
         user = request.user
-        print(user)
         create_form = CreateTaskForm(request.POST)
         if create_form.is_valid():
             new_post = SingleTask(user=user,
@@ -62,7 +62,26 @@ def company_register(request):
 
 def company_detail(request, id):
     company = get_object_or_404(Company, id=id)
-    return render(request, 'main/company_detail.html', {'company': company})
+    if request.user in company.employee.all():
+            return render(request, 'main/company_detail.html', {'company': company})
+    if request.user in company.owner.all():
+            return render(request, 'main/company_detail.html', {'company': company})
+    elif request.user not in company.employee.all():
+        if request.user not in company.owner.all():
+            if request.method == 'POST':
+                join_form = EmployeeJoinForm(request.POST)
+                if join_form.is_valid():
+                    form = join_form.cleaned_data
+                    if form['secret_key'] == company.secret_key:
+                        company.employee.add(request.user)
+                        return redirect('main:company_detail', id=company.id)
+                    else:
+                        return redirect('account:dashboard')
+            else:
+                join_form = EmployeeJoinForm()
+        return render(request, 'main/join_to_co.html', {'form': join_form})
+
+    return HttpResponse('error')
 
 
 @login_required
@@ -74,8 +93,6 @@ def group_create(request):
                 new_group = form.save(commit=False)
                 new_group.admin = request.user
                 new_group.save()
-
-                
                 group = CompanyGroup.objects.get(id=new_group.id)
                 group.member.add(request.user)
                 return render(request, 'main/group_created.html', {'group': new_group})
@@ -89,4 +106,65 @@ def group_create(request):
 @login_required
 def group_detail(request, id):
     group = get_object_or_404(CompanyGroup, id=id)
-    return render(request, 'main/group_detail.html', {'group': group})
+    tasks = group.tasks.all()
+    return render(request, 'main/group_detail.html', {'group': group, 'tasks': tasks})
+
+
+@login_required
+def user_groups(request):
+    user = request.user
+    groups = user.groups_in.all()
+
+    return render(request, 'main/user_groups_in.html', {'user': user,
+                                                        'groups': groups})
+
+
+def user_companies(request):
+    user = request.user
+    companies_in = user.workat.all()
+    return render(request, 'main/user_companies_in.html', {'user': user,
+                                                        'companies': companies_in})
+
+@login_required
+def add_member(request, id):
+    group = get_object_or_404(CompanyGroup, id=id)
+    if request.user in group.member.all() or request.user == group.admin:
+        if request.method == 'POST':
+            form = SearchUserForm(request.POST)
+            if form.is_valid():
+                list = []
+                list_name = form.cleaned_data['usern']
+                usernames = re.sub('[^\w]', ' ', list_name).split()
+                for username in usernames:
+                    user = User.objects.get(username=username)
+                    group.member.add(user)
+                group.save()
+                return redirect('main:group_detail', id=group.id)
+        else:
+            form = SearchUserForm()
+        return render(request, 'main/search_user_forgp.html', {'form': form})
+    else:
+        return redirect('account:dashboard')
+
+
+@login_required
+def create_group_task(request, id):
+    group = get_object_or_404(CompanyGroup, id=id)
+    if request.user in group.member.all() or request.user == group.admin:
+        if request.method == 'POST':
+            user = request.user
+            create_form = GroupTaskCreateForm(request.POST)
+            if create_form.is_valid():
+                group_task = GroupTask(group=group,
+                                      user=user,
+                                      text=create_form.cleaned_data['text'],
+                                      done=create_form.cleaned_data['done'])
+                group_task.save()
+                return redirect('main:group_detail', id=group.id)
+        else:
+            create_form = GroupTaskCreateForm()
+        return render(request, 'main/create_group_task.html', {'form': create_form})
+    else:
+        return redirect('account:dashboard')
+
+# TODO: when member who is admin too, left the group, should remove from admin field

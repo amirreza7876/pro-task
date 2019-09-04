@@ -10,5 +10,8 @@ urlpatterns = [
     path('company/<int:id>/', views.company_detail, name='company_detail'),
     path('create/group/', views.group_create, name='group_create'),
     path('group/<int:id>/', views.group_detail, name='group_detail'),
-
+    path('mygroups/', views.user_groups, name='user_groups'),
+    path('companies/', views.user_companies, name='user_companies'),
+    path('add_member/group/<int:id>/', views.add_member, name='add_member'),
+    path('create/group_task/<int:id>/', views.create_group_task, name='create_group_task')
 ]

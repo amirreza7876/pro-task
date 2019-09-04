@@ -1,0 +1,14 @@
+{%extends 'base.html'%}
+
+
+{%block title%}
+  groups you're in
+{%endblock%}
+
+
+{%block body%}
+<b>group you are in:</b>
+  {%for group in groups%}
+    <p><a href="{{group.get_absolute_url}}">{{group.name}}</a></p>
+  {%endfor%}
+{%endblock%}
