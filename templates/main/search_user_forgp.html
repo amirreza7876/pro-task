@@ -9,9 +9,19 @@
     {{form.as_p}}
     <p>separate each username with space or '-'</p>
     {%csrf_token%}
-    <input type="submit" name="" value="add these users">
+    <input type="submit" class="btn btn-primary" value="add these users">
   </form>
-  {% if form.errors %}
+  {%for user in user_exists%}
+    <p>{{user}} already exist in group </p>
+
+  {%endfor%}
+  <!-- {%if user_not_found%} -->
+  {%for user in user_not_found%}
+    <p>{{user}} not found </p>
+  {%endfor%}
+  <a href="{%url 'main:group_detail' group.id%}">back to group</a>
+  <!-- {%endif%} -->
+  <!-- {% if form.errors %}
     {% for field in form %}
         {% for error in field.errors %}
             <div class="alert alert-danger">
@@ -24,5 +34,5 @@
             <strong>{{ error|escape }}</strong>
         </div>
     {% endfor %}
-{% endif %}
+  {% endif %} -->
 {%endblock%}

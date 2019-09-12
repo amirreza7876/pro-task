@@ -5,6 +5,7 @@ from .models import *
 from .forms import *
 from django.urls import reverse_lazy
 from django.http import HttpResponse
+from django.core.exceptions import ObjectDoesNotExist
 import re
 
 class IndexView(TemplateView):
@@ -64,7 +65,7 @@ def company_detail(request, id):
     company = get_object_or_404(Company, id=id)
     if request.user in company.employee.all():
             return render(request, 'main/company_detail.html', {'company': company})
-    if request.user in company.owner.all():
+    elif request.user in company.owner.all():
             return render(request, 'main/company_detail.html', {'company': company})
     elif request.user not in company.employee.all():
         if request.user not in company.owner.all():
@@ -93,7 +94,7 @@ def group_create(request):
                 new_group = form.save(commit=False)
                 new_group.admin = request.user
                 new_group.save()
-                group = CompanyGroup.objects.get(id=new_group.id)
+                group = Group.objects.get(id=new_group.id)
                 group.member.add(request.user)
                 return render(request, 'main/group_created.html', {'group': new_group})
         else:
@@ -105,7 +106,7 @@ def group_create(request):
 
 @login_required
 def group_detail(request, id):
-    group = get_object_or_404(CompanyGroup, id=id)
+    group = get_object_or_404(Group, id=id)
     tasks = group.tasks.all()
     return render(request, 'main/group_detail.html', {'group': group, 'tasks': tasks})
 
@@ -127,29 +128,55 @@ def user_companies(request):
 
 @login_required
 def add_member(request, id):
-    group = get_object_or_404(CompanyGroup, id=id)
+    group = get_object_or_404(Group, id=id)
     if request.user in group.member.all() or request.user == group.admin:
         if request.method == 'POST':
             form = SearchUserForm(request.POST)
             if form.is_valid():
-                list = []
                 list_name = form.cleaned_data['usern']
                 usernames = re.sub('[^\w]', ' ', list_name).split()
+                user_not_found = []
+                user_exists = []
                 for username in usernames:
-                    user = User.objects.get(username=username)
-                    group.member.add(user)
-                group.save()
+                    try:
+                        user = User.objects.get(username=username)
+                        group.member.add(user)
+                        if user in group.member.all():
+                            user_exists.append(username)
+                        group.save()
+                    except ObjectDoesNotExist as not_found:
+                        user_not_found.append(username)
+                return render(request, 'main/search_user_forgp.html',
+                              {'form': form,
+                              'group': group,
+                              'user_not_found': user_not_found,
+                              'success_users': username,
+                              'user_exists': user_exists})
+                # group.save()
                 return redirect('main:group_detail', id=group.id)
         else:
             form = SearchUserForm()
         return render(request, 'main/search_user_forgp.html', {'form': form})
     else:
-        return redirect('account:dashboard')
+        return render(request, 'main/custom.html', {'not_member': 'you are not member of this group',})
 
 
 @login_required
+def remove_user(request, user_id, group_id):
+    group = get_object_or_404(Group, id=group_id)
+    user = get_object_or_404(User, id=user_id)
+    if user in group.member.all() and user != group.admin:
+        group = group.member.remove(user)
+    elif user == group.admin:
+        return render(request, 'main/custom.html', {'not_removable': 'you can\'t remove admin',
+                                                    'not_removable_gp': group})
+    else:
+        return redirect('account:dashboard')
+    return render(request, 'main/remove_user.html', {'user': user, 'group': group})
+
+@login_required
 def create_group_task(request, id):
-    group = get_object_or_404(CompanyGroup, id=id)
+    group = get_object_or_404(Group, id=id)
     if request.user in group.member.all() or request.user == group.admin:
         if request.method == 'POST':
             user = request.user
@@ -165,6 +192,5 @@ def create_group_task(request, id):
             create_form = GroupTaskCreateForm()
         return render(request, 'main/create_group_task.html', {'form': create_form})
     else:
-        return redirect('account:dashboard')
-
+        return render(request, 'main/custom.html', {'not_member': 'you are not member of this group',})
 # TODO: when member who is admin too, left the group, should remove from admin field

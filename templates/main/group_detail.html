@@ -9,7 +9,7 @@
   <a href="{%url 'main:add_member' group.id%}">add member</a>
   <h4>admin is {{group.admin}}</h4>
   {%for mem in group.member.all %}
-    <p>{{mem.username}}</p>
+    <p>{{mem.username}} <a href="{%url 'main:remove_user' mem.id group.id%}"> remove</a></p>
   {%endfor%}
   <div class="tasks">
     {%for task in tasks%}

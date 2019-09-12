@@ -15,3 +15,9 @@ class CompanyGroupAdmin(admin.ModelAdmin):
 @admin.register(Company)
 class CompanyAdmin(admin.ModelAdmin):
     pass
+GroupTask
+
+
+@admin.register(GroupTask)
+class GroupTaskAdmin(admin.ModelAdmin):
+    pass

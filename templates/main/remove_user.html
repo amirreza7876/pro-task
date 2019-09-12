@@ -1,0 +1,12 @@
+{%extends 'base.html'%}
+
+{%block title%}
+  removed
+{%endblock%}
+
+{%block body%}
+{%if user%}
+  <p>you removed {{user.username}}</p>
+{%endif%}
+<p><a href="{%url 'main:group_detail' group.id%}">back to group</a></p>
+{%endblock%}

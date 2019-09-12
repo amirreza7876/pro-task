@@ -1,0 +1,20 @@
+{%extends 'base.html'%}
+
+
+{%block title%}
+  Followers
+{%endblock%}
+
+
+{%block body%}
+<div class="my-3 p-3 bg-white rounded shadow-sm col-md-3 ">
+  <h6 class="border-bottom border-gray pb-2 mb-0">Followers</h6>
+  {%for follower in user.followers.all%}
+  <p class="media-body pb-3 mb-0 ml-4 small lh-125 border-bottom border-gray">
+    <strong class="d-block text-gray-dark">
+      <a href="{{follower.get_absolute_url}}">{{follower.username}}</a>
+    </strong>
+  </p>
+  {%endfor%}
+</div>
+{%endblock%}

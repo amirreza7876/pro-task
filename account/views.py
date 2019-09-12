@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import User
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST
@@ -33,13 +33,13 @@ def user_follow(request):
 def profile_detail(request, username):
     user = get_object_or_404(User, username=username)
     tasks = SingleTask.objects.filter(active=True, user=user)
-
     context = {
         'tasks': tasks,
         'this_user': user,
         'section': 'people',
     }
     return render(request, 'account/user/detail.html', context)
+
 
 def profile_list(request):
     users = User.objects.all()
@@ -59,8 +59,13 @@ def user_login(request):
                                          password=cd['password'])
             if user is not None:
                 if user.is_active:
-                    login(request, user)
-                    return HttpResponse('login successful')
+                    if not user.co_creator.all():
+                        login(request, user)
+                        if user.is_authenticated:
+                            return redirect('main:company_register')
+                    else:
+                        login(request, user)
+                        return redirect('main:index')
                 else:
                     return HttpResponse('disabled account')
             else:
@@ -85,5 +90,28 @@ def register(request):
 
 @login_required
 def dashboard(request):
-        user = request.user
-        return render(request, 'account/user/dashboard.html', {'user': user})
+    user = request.user
+    groups = user.groups_in.all()
+    companies_in = user.workat.all()
+    followings = user.following.all()[:10]
+    followers = user.followers.all()[:10]
+    companies = user.co_own.all()
+    company_creator = user.co_creator.all()
+    return render(request, 'account/user/dashboard.html', {'user': user,
+                                                           'groups': groups,
+                                                           'companies': companies_in,
+                                                           'followings': followings,
+                                                           'followers': followers,
+                                                           'companies_own': companies,
+                                                           'company_creator': company_creator})
+@login_required
+def user_followers(request):
+    user = request.user
+    followers = user.followers.all()
+    return render(request, 'account/user/followers.html', {'followers': followers})
+
+
+def user_followings(request):
+    user = request.user
+    followings = user.following.all()[:10]
+    return render(request, 'account/user/followings.html', {'followings': followings})

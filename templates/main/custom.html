@@ -1,0 +1,22 @@
+{%extends 'base.html'%}
+
+
+{%block title%}
+
+{%endblock%}
+
+
+{%block body%}
+  {%if not_removable%}
+    {{not_removable}}
+    <p><a href="{%url 'main:group_detail' not_removable_gp.id%}">return to group from here</a></p>
+  {%endif%}
+  {%if not_member%}
+    <p>{{not_member}}</p>
+    <p><a href="{%url 'account:dashboard'%}">back to dashboard</a></p>
+  {%endif%}
+  {%if user_exists%}
+    <p>{{user_exists}}</p>
+    <p><a href="{%url 'main:group_detail' target_gp.id%}">back to group</a></p>
+  {%endif%}
+{%endblock%}
