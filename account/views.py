@@ -69,7 +69,10 @@ def user_login(request):
                 else:
                     return HttpResponse('disabled account')
             else:
-                return HttpResponse('invalid login')
+                print('aras')
+                return render(request, 'account/login.html', {'form': form,
+                                                              'invalid_login': 'invalid login. maybe you\'re not registered.\n'})
+
     else:
         form = LoginForm()
     return render(request, 'account/login.html', {'form': form})

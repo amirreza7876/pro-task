@@ -6,11 +6,11 @@
 
 
 {%block body%}
-  <p>register here</p>
   <form action="." method="post">
     {{user_form.as_p}}
     {% csrf_token %}
     <input type="submit" name="" value="register">
   </form>
+
   <p><a href="{%url 'account:login'%}">already have an account</a></p>
 {%endblock%}

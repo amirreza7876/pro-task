@@ -62,9 +62,6 @@ class GroupTask(models.Model):
         class Meta:
             ordering = ('-created_date',)
 
-# class Contact(models.Model):
-#     pass
-
 
 class Company(models.Model):
     secret_key = models.CharField(max_length=128, default='secret')

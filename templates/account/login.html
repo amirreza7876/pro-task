@@ -11,4 +11,8 @@
     {%csrf_token%}
     <p><input type="submit" value="Log in"></p>
   </form>
+  {%if invalid_login%}
+    {{invalid_login}}
+  {%endif%}
+  <a href="{%url 'account:register'%}">register here</a>
 {%endblock%}
