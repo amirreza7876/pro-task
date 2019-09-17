@@ -7,23 +7,8 @@
 
 {%block body%}
   welcome {{user.get_full_name}}
-
-
-
-
-
-
-
 <div class="my-3 p-3 bg-white rounded shadow-sm">
   <h6 class="border-bottom border-gray pb-2 mb-0">Actions</h6>
-  <div class="media text-muted pt-3">
-    <svg class="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#66ff66"/><text x="50%" y="50%" fill="#66ff66" dy=".3em"></text></svg>
-    <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-      <strong class="d-block text-gray-dark"><a href="{%url 'main:group_create'%}">create group</a></strong>
-      Create group to manage your Company
-    </p>
-  </div>
-
   <div class="media text-muted pt-3">
     <svg class="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#ffff66"/><text x="50%" y="50%" fill="#ffff66" dy=".3em"></text></svg>
     <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
@@ -32,87 +17,21 @@
     </p>
   </div>
   <div class="media text-muted pt-3">
-    <svg class="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#00ccff"/><text x="50%" y="50%" fill="#00ccff" dy=".3em"></text></svg>
+    <svg class="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#ffff66"/><text x="50%" y="50%" fill="#ffff66" dy=".3em"></text></svg>
     <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-      <strong class="d-block text-gray-dark"><a href="{%url 'main:create_task'%}">add task</a></strong>
+      <strong class="d-block text-gray-dark"><a href="{%url 'main:show_offers'%}">Show offers</a></strong>
       Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.
     </p>
   </div>
 </div>
 <div class="row col-md-12">
-  {%if groups%}
-  <div class="my-3 p-3 bg-white rounded shadow-sm col-md-3 ">
-    <h6 class="border-bottom border-gray pb-2 mb-0">Groups You In</h6>
-    {%for group in groups%}
-      <p class="media-body pb-3 mb-0 ml-4 small lh-125 border-bottom border-gray">
-        <strong class="d-block text-gray-dark">
-          <a href="{{group.get_absolute_url}}">{{group.name}}</a>
-        </strong>
-      </p>
-    {%endfor%}
-  </div>
-  {%endif%}
-  {%if companies%}
   <div class="my-3 p-3 bg-white rounded shadow-sm col-md-3">
-    <h6 class="border-bottom border-gray pb-2 mb-0">Companies You Work For</h6>
-    {%for company in companies%}
+    <h6 class="border-bottom border-gray pb-2 mb-0">Your Team</h6>
     <p class="media-body pb-3 mb-0 ml-4 small lh-125 border-bottom border-gray">
       <strong class="d-block text-gray-dark">
-        <a href="{{company.get_absolute_url}}">{{company.name}}</a>
+        <a href="{{team.get_absolute_url}}">{{team.name}}</a>
       </strong>
     </p>
-    {%endfor%}
-  </div>
-  {%endif%}
-  {%if companies_own%}
-  <div class="my-3 p-3 bg-white rounded shadow-sm col-md-3">
-    <h6 class="border-bottom border-gray pb-2 mb-0">Companies You Own</h6>
-    {%for company in companies_own%}
-    <p class="media-body pb-3 mb-0 ml-4 small lh-125 border-bottom border-gray">
-      <strong class="d-block text-gray-dark">
-        <a href="{{company.get_absolute_url}}">{{company.name}}</a>
-      </strong>
-    </p>
-    {%endfor%}
-  </div>
-  {%endif%}
-  {%if company_creator%}
-  <div class="my-3 p-3 bg-white rounded shadow-sm col-md-3">
-    <h6 class="border-bottom border-gray pb-2 mb-0">companies You Create</h6>
-    {%for company in company_creator%}
-    <p class="media-body pb-3 mb-0 ml-4 small lh-125 border-bottom border-gray">
-      <strong class="d-block text-gray-dark">
-        <a href="{{company.get_absolute_url}}">{{company.name}}</a>
-      </strong>
-    </p>
-    {%endfor%}
-  </div>
-  {%endif%}
-  <div class="my-3 p-3 bg-white rounded shadow-sm col-md-6">
-    <h6 class="border-bottom border-gray pb-2 mb-0">Following</h6>
-    {%for following in followings%}
-    <p class="media-body pb-3 mb-0 ml-4 small lh-125 border-bottom border-gray">
-      <strong class="d-block text-gray-dark">
-        <a href="{{follower.get_absolute_url}}">{{following.username}}</a>
-      </strong>
-    </p>
-    {%endfor%}
-    {%if followings.count > 10%}
-    <p class="media-body pb-3 mb-0 ml-1 small lh-125 border-bottom border-gray "><strong><a class="text-dark" href="{%url 'account:followings'%}">See all Followings</a></strong></p>
-    {%endif%}
-  </div>
-  <div class="my-3 p-3 bg-white rounded shadow-sm col-md-6">
-    <h6 class="border-bottom border-gray pb-2 mb-0">Followers</h6>
-    {%for follower in followers%}
-    <p class="media-body pb-3 mb-0 ml-4 small lh-125 border-bottom border-gray">
-      <strong class="d-block text-gray-dark">
-        <a href="{{follower.get_absolute_url}}">{{follower.username}}</a>
-      </strong>
-    </p>
-    {%endfor%}
-    {%if followers.count > 10%}
-    <p class="media-body pb-3 mb-0 ml-1 small lh-125 border-bottom border-gray "><strong><a class="text-dark" href="{%url 'account:followers'%}">See all Followers</a></strong></p>
-    {%endif%}
   </div>
 </div>
 

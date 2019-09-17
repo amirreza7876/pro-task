@@ -4,8 +4,8 @@ from . import views
 app_name = 'account'
 
 urlpatterns = [
-    path('users/', views.profile_list, name='profile_list'),
-    path('users/follow/', views.user_follow, name='user_follow'),
+    # path('users/', views.profile_list, name='profile_list'),
+    # path('users/follow/', views.user_follow, name='user_follow'),
     path('user/<str:username>', views.profile_detail, name='profile_detail'),
     path('login/', views.user_login, name='login'),
     # path('login/', auth_views.LoginView.as_view(), name='login'),
@@ -20,6 +20,6 @@ urlpatterns = [
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
     path('register/', views.register, name='register'),
     path('dashboard/', views.dashboard, name='dashboard'),
-    path('followers/', views.user_followers, name='followers'),
-    path('followings/', views.user_followings, name='followings')
+    # path('followers/', views.user_followers, name='followers'),
+    # path('followings/', views.user_followings, name='followings')
 ]

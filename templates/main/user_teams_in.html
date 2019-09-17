@@ -1,12 +1,12 @@
 {%extends 'base.html'%}
 
 {%block title%}
-  companies you in
+  teams you in
 {%endblock%}
 
 {%block body%}
 <b>companies you are working for:</b>
-  {%for company in companies%}
-    <p><a href="{{company.get_absolute_url}}">{{company.name}}</a></p>
+  {%for team in teams%}
+    <p><a href="{{company.get_absolute_url}}">{{team.name}}</a></p>
   {%endfor%}
 {%endblock%}

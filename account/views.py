@@ -3,30 +3,11 @@ from .models import User
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST
 from common.decorators import ajax_required
-from .models import Contact
+# from .models import Contact
 from main.models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 from .forms import LoginForm, UserRegistrationForm
-
-
-@ajax_required
-@require_POST
-@login_required
-def user_follow(request):
-    user_id = request.POST.get('id')
-    action = request.POST.get('action')
-    if user_id and action:
-        try:
-            user = User.objects.get(id=user_id)
-            if action == 'follow':
-                Contact.objects.get_or_create(user_from=request.user, user_to=user)
-            else:
-                Contact.objects.filter(user_from=request.user, user_to=user).delete()
-            return JsonResponse({'status': 'ok'})
-        except User.DoesNotExist:
-            return JsonResponse({'status': 'ko'})
-    return JsonResponse({'status': 'ko'})
 
 
 @login_required
@@ -41,15 +22,6 @@ def profile_detail(request, username):
     return render(request, 'account/user/detail.html', context)
 
 
-def profile_list(request):
-    users = User.objects.all()
-    context = {
-        'users': users,
-        'section': 'people'
-    }
-    return render(request, 'account/user/list.html', context)
-
-
 def user_login(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
@@ -59,25 +31,23 @@ def user_login(request):
                                          password=cd['password'])
             if user is not None:
                 if user.is_active:
-                    if not user.co_creator.all():
+                    if not user.team_creator.all():
                         login(request, user)
                         if user.is_authenticated:
-                            return redirect('main:company_register')
+                            return redirect('main:team_register')
                     else:
                         login(request, user)
                         return redirect('main:index')
                 else:
                     return HttpResponse('disabled account')
             else:
-                print('aras')
                 return render(request, 'account/login.html', {'form': form,
-                                                              'invalid_login': 'invalid login. maybe you\'re not registered.\n'})
-
+                                                              'invalid_login': 'invalid'})
     else:
         form = LoginForm()
     return render(request, 'account/login.html', {'form': form})
 
-
+# TODO: change team register place from login to register ...
 def register(request):
     if request.method == 'POST':
         user_form = UserRegistrationForm(request.POST)
@@ -88,33 +58,54 @@ def register(request):
             return render(request, 'account/reg_success.html', {'new_user': new_user})
     else:
         user_form = UserRegistrationForm()
-
     return render(request, 'account/register.html', {'user_form':user_form})
+
 
 @login_required
 def dashboard(request):
+    # groups = user.groups_in.all()
+    # followings = user.following.all()[:10]
+    # followers = user.followers.all()[:10]
     user = request.user
-    groups = user.groups_in.all()
-    companies_in = user.workat.all()
-    followings = user.following.all()[:10]
-    followers = user.followers.all()[:10]
-    companies = user.co_own.all()
-    company_creator = user.co_creator.all()
-    return render(request, 'account/user/dashboard.html', {'user': user,
-                                                           'groups': groups,
-                                                           'companies': companies_in,
-                                                           'followings': followings,
-                                                           'followers': followers,
-                                                           'companies_own': companies,
-                                                           'company_creator': company_creator})
-@login_required
-def user_followers(request):
-    user = request.user
-    followers = user.followers.all()
-    return render(request, 'account/user/followers.html', {'followers': followers})
-
-
-def user_followings(request):
-    user = request.user
-    followings = user.following.all()[:10]
-    return render(request, 'account/user/followings.html', {'followings': followings})
+    return render(request, 'account/user/dashboard.html', {'user': user,})
+    if user.workat.get() or user.team_creator.get():
+        team_in = user.workat.get()
+        team_creator = user.team_creator.get()
+        return render(request, 'account/user/dashboard.html', {'user': user,
+                                                               'team': team_in,
+                                                               # 'team_own': team,
+                                                               'team_creator': team_creator
+                                                               # 'groups': groups,
+                                                                # 'followings': followings,
+                                                                # 'followers': followers,
+                                                                })
+#
+#
+# @login_required
+# def user_followers(request):
+#     user = request.user
+#     followers = user.followers.all()
+#     return render(request, 'account/user/followers.html', {'followers': followers})
+#
+#
+# def user_followings(request):
+#     user = request.user
+#     followings = user.following.all()[:10]
+#     return render(request, 'account/user/followings.html', {'followings': followings})
+#
+#
+# @ajax_required
+# @require_POST
+# @login_required
+# def user_follow(request):
+#     user_id = request.POST.get('id')
+#     action = request.POST.get('action')
+#     if user_id and action:
+#         try:
+#             user = User.objects.get(id=user_id)
+#             if action == 'follow':
+#                 Contact.objects.get_or_create(user_from=request.user, user_to=user)
+#             else:
+#                 Contact.objects.filter(user_from=request.user, user_to=user).delete()
+#             return JsonResponse({'status': 'ok'})
+#         except User.DoesNotExist:

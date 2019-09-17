@@ -6,14 +6,37 @@ from django.urls import reverse
 User.add_to_class("company_name", models.CharField(max_length=128, null=True, blank=True))
 
 
-class SingleTask(models.Model):
+class Request(models.Model):
+    text = models.TextField(max_length=256)
+    from_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='requests')
+    to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='offers')
+    team = models.ForeignKey('Team', on_delete=models.CASCADE, related_name='reqtou', default=None, null=True)
+    date = models.DateTimeField(auto_now_add=True)
+
+
+class TeamTask(models.Model):
+    STATUS_CHOICES = [
+    ('DN', 'Done'),
+    ('OD', 'On Doing'),
+    ('ST', 'Stuck'),
+    ]
+    PRIORITY_CHOICES = [
+    ('M','Medium'),
+    ('H','High'),
+    ('L','Low'),
+    ('BE','Best effort'),
+    ]
     active = models.BooleanField(default=True)
     done = models.BooleanField(default=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='singletasks')
-    text = models.TextField()
+    team = models.ForeignKey('Team', on_delete=models.CASCADE, related_name='team_tasks', default='')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks_created')
+    text = models.TextField(max_length=512)
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
-    like = models.ManyToManyField(User, related_name='likes')
+    status = models.CharField(max_length=2, choices=STATUS_CHOICES, default='DN')
+    priority = models.CharField(max_length=2, choices=PRIORITY_CHOICES, default='M')
+    assignee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks_todo', default=None, null=True)
+    # like = models.ManyToManyField(User, related_name='likes')
 
     def __str__(self):
         return 'task by {}'.format(self.user)
@@ -25,49 +48,10 @@ class SingleTask(models.Model):
         ordering = ('-created_date',)
 
 
-
-
-
-class CompanyGroup(models.Model):
-    name = models.CharField(max_length=128, default=None, null=True)
-    company = models.ForeignKey('Company', on_delete=models.CASCADE, related_name='groups', default=None, null=True)
-    member = models.ManyToManyField(User, related_name='groups_in')
-    admin = models.ForeignKey(User, related_name='groups_own', on_delete=models.SET_NULL, null=True)
-    private_key = models.CharField(max_length=128, default='0000')
-    active = models.BooleanField(default=True)
-    admin_key = models.CharField(max_length=128, default='1111')
-
-    def __str__(self):
-        return '{} by {}'.format(self.name, self.admin)
-
-    def get_absolute_url(self):
-        return reverse('main:group_detail', args=[self.id])
-
-class GroupTask(models.Model):
-        active = models.BooleanField(default=True)
-        done = models.BooleanField(default=False)
-        group = models.ForeignKey(CompanyGroup, on_delete=models.CASCADE, related_name='tasks')
-        user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks')
-        text = models.TextField()
-        created_date = models.DateTimeField(auto_now_add=True)
-        updated_date = models.DateTimeField(auto_now=True)
-        # like = models.ManyToManyField(User, related_name='likes')
-
-        def __str__(self):
-            return 'task by {}'.format(self.user)
-
-        def get_absolute_url(self):
-            return reverse('main:single_task', args=[self.id])
-
-        class Meta:
-            ordering = ('-created_date',)
-
-
-class Company(models.Model):
+class Team(models.Model):
     secret_key = models.CharField(max_length=128, default='secret')
-    employee = models.ManyToManyField(User, related_name='workat')
-    creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='co_creator')
-    owner = models.ManyToManyField(User, related_name='co_own')
+    member = models.ManyToManyField(User, related_name='workat')
+    creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='team_creator')
     creator_email = models.EmailField(verbose_name='E-mail',max_length=256, blank=True)
     name = models.CharField(verbose_name='Company Name', max_length=256, unique=True)
     description = models.CharField(max_length=512)
@@ -75,15 +59,53 @@ class Company(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        permissions = (
-            ('add_singletask', 'can add task'),
-            ('delete_singletask', 'can delete task'),
-            ('change_singletask', ' can edit task')
-        )
+        pass
+        # permissions = (
+        #     ('add_singletask', 'can add task'),
+        #     ('delete_singletask', 'can delete task'),
+        #     ('change_singletask', ' can edit task')
+        # )
 
     def __str__(self):
         # owners = ", ".join(str(seg) for seg in self.owner.all())
         return '{} by {}'.format(self.name, self.creator)
 
     def get_absolute_url(self):
-        return reverse('main:company_detail', args=[self.id])
+        return reverse('main:team_detail', args=[self.id])
+
+
+
+#
+# class SingleTask(models.Model):
+#     active = models.BooleanField(default=True)
+#     done = models.BooleanField(default=False)
+#     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='singletasks')
+#     text = models.TextField()
+#     created_date = models.DateTimeField(auto_now_add=True)
+#     updated_date = models.DateTimeField(auto_now=True)
+#     like = models.ManyToManyField(User, related_name='likes')
+#
+#     def __str__(self):
+#         return 'task by {}'.format(self.user)
+#
+#     def get_absolute_url(self):
+#         return reverse('main:single_task', args=[self.id])
+#
+#     class Meta:
+#         ordering = ('-created_date',)
+#
+#
+# class CompanyGroup(models.Model):
+#     name = models.CharField(max_length=128, default=None, null=True)
+#     team = models.ForeignKey('Team', on_delete=models.CASCADE, related_name='groups', default=None, null=True)
+#     member = models.ManyToManyField(User, related_name='groups_in')
+#     admin = models.ForeignKey(User, related_name='groups_own', on_delete=models.SET_NULL, null=True)
+#     private_key = models.CharField(max_length=128, default='0000')
+#     active = models.BooleanField(default=True)
+#     admin_key = models.CharField(max_length=128, default='1111')
+#
+#     def __str__(self):
+#         return '{} by {}'.format(self.name, self.admin)
+#
+#     def get_absolute_url(self):
+#         return reverse('main:group_detail', args=[self.id])

@@ -5,22 +5,33 @@
 {%endblock%}
 
 {%block body%}
+<a href="{%url 'main:team_detail' team.id%}">back to team</a>
+
   <form action="." method="post">
     {{form.as_p}}
     <p>separate each username with space or '-'</p>
     {%csrf_token%}
     <input type="submit" class="btn btn-primary" value="add these users">
   </form>
+  {%for user in user_added%}
+  <div class="alert alert-success col-md-4 mt-3">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    {{user}} added sucessfuly
+  </div>
+  {%endfor%}
   {%for user in user_exists%}
-    <p>{{user}} already exist in group </p>
-
+  <div class="alert alert-warning col-md-4 mt-3">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    {{user}} already exists
+  </div>
   {%endfor%}
-  <!-- {%if user_not_found%} -->
   {%for user in user_not_found%}
-    <p>{{user}} not found </p>
+  <div class="alert alert-danger col-md-4 mt-3">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    {{user}} not found
+  </div>
   {%endfor%}
-  <a href="{%url 'main:group_detail' group.id%}">back to group</a>
-  <!-- {%endif%} -->
+
   <!-- {% if form.errors %}
     {% for field in form %}
         {% for error in field.errors %}

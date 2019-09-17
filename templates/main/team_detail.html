@@ -1,0 +1,28 @@
+{%extends 'base.html'%}
+
+{%block title%}
+  {{team.name}}-co
+{%endblock%}
+
+
+{%block body%}
+{%if user.team_creator.get%}
+<a href="{%url 'main:add_member' team.id%}">Add member</a>
+{%endif%}
+{%if messages%}
+  {%for message in messages%}
+  <div class="alert alert-warning">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+     {{ message }}
+  </div>
+  {%endfor%}
+{%endif%}
+{%if error%}
+  <p id='invalid_login'>You already have a Team</p>
+{%endif%}
+  <h2>{{team.name}}</h2>
+  <p>team members  are:</p>
+  {%for member in team.member.all %}
+    <p>{{member.username}}</p>
+  {%endfor%}
+{%endblock%}

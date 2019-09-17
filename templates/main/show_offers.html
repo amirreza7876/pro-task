@@ -1,0 +1,28 @@
+{%extends 'base.html'%}
+{%load static%}
+
+
+{%block title%}
+  Offers to You
+{%endblock%}
+
+
+{%block body%}
+<!-- <script src="{%static 'js/main.js'%}"></script> -->
+<h4>Team offers</h4>
+{%if not user.workat.all%}
+  {%if offers%}
+    {%for offer in offers%}
+      <div id="offer">
+        <p class="lead font-weight-normal">{{offer.text}}</p>
+        <a href="{%url 'main:accept_invite' offer.from_user.team_creator.get.id%}" class="btn btn-success" onmouseover="remove_offer()">Accept</a>
+      </div>
+    {%endfor%}
+  {%else%}
+    <p>there is no offer to you</p>
+  {%endif%}
+{%else%}
+  <p class="lead font-weight-normal">You have a team</p>
+{%endif%}
+<hr>
+{%endblock%}

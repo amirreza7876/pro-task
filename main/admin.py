@@ -2,22 +2,25 @@ from django.contrib import admin
 from .models import *
 
 
-@admin.register(SingleTask)
-class SingleTaskAdmin(admin.ModelAdmin):
+# @admin.register(SingleTask)
+# class SingleTaskAdmin(admin.ModelAdmin):
+#     pass
+#
+
+# @admin.register(CompanyGroup)
+# class CompanyGroupAdmin(admin.ModelAdmin):
+#     pass
+
+
+@admin.register(Team)
+class TeamAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(CompanyGroup)
-class CompanyGroupAdmin(admin.ModelAdmin):
+@admin.register(TeamTask)
+class TeamTaskAdmin(admin.ModelAdmin):
     pass
 
-
-@admin.register(Company)
-class CompanyAdmin(admin.ModelAdmin):
-    pass
-GroupTask
-
-
-@admin.register(GroupTask)
-class GroupTaskAdmin(admin.ModelAdmin):
+@admin.register(Request)
+class RequestAdmin(admin.ModelAdmin):
     pass
