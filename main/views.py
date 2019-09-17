@@ -13,7 +13,7 @@ import re
 class IndexView(TemplateView):
     template_name = 'main/index.html'
 
-
+@login_required
 def team_register(request):
     user = request.user
     if not user.team_creator.all():
@@ -34,7 +34,7 @@ def team_register(request):
         # return render(request, 'main/company_detail.html', {'error': 'error'})
     return render(request, 'main/company_registration.html', {'form':team_form})
 
-
+@login_required
 def team_detail(request, id):
     team = get_object_or_404(Team, id=id)
     if request.user in team.member.all():
