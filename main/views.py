@@ -68,21 +68,33 @@ def add_member(request, id):
                 user_not_found = []
                 user_exists = []
                 user_added = []
-
+                sent = False
                 for username in usernames:
                     try:
                         user = User.objects.get(username=username)
                         if user in team.member.all():
                             user_exists.append(username)
                         elif user not in team.member.all():
-                            # team.member.add(user)
-                            user.offers.create(text='{} wants you to join to {} team in WWW.EXAMPLE.COM\
+                            offer = Request(text='{} wants you to join to {} team in WWW.EXAMPLE.COM\
                                                     if you want to accept this invitation click on bellow\
                                                     link....'.format(request.user, team.name),
-                                               from_user=request.user,
-                                               team=request.user.team_creator.get())
-                            user_added.append(username)
+                                            from_user=request.user, to_user=user, team=request.user.team_creator.get())
+
+                            if user.offers.all():
+                                for ofr in user.offers.all():
+                                    if ofr.team == offer.team:
+                                        sent = True
+                                        break
+                                    else:
+                                        offer.save()
+                            else:
+                                offer.save()
+                            if sent:
+                                messages.error(request,'a request was sent before')
+                            if not sent:
+                                user_added.append(username)
                         team.save()
+
                     except ObjectDoesNotExist as not_found:
                         user_not_found.append(username)
                 return render(request, 'main/search_user_forgp.html',
@@ -92,13 +104,13 @@ def add_member(request, id):
                               'success_users': username,
                               'user_exists': user_exists,
                               'user_added': user_added})
-                # group.save()
-                return redirect('main:team_detail', id=team.id)
+                # return redirect('main:team_detail', id=team.id)
         else:
             form = SearchUserForm()
             return render(request, 'main/search_user_forgp.html', {'form': form,'team':team})
     else:
         return render(request, 'main/custom.html', {'not_member': 'you are not member of this team',})
+
 
 @login_required
 def show_offers(request):
@@ -111,14 +123,12 @@ def show_offers(request):
 def accept_invite(request, id):
     team = get_object_or_404(Team, id=id)
     user = request.user
-    # if user.is_authenticated:
     if user not in team.member.all():
         team.member.add(user)
         team.save()
         offers_from_one_team = Request.objects.filter(team=user.workat.get())
         for offer in offers_from_one_team:
             offer.delete()
-        # user.offers.from_user.team_creator.get().id.remove()
         return redirect('main:team_detail', team.id)
     else:
         messages.error(request,'you already have a team')

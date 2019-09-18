@@ -13,10 +13,11 @@
     {%csrf_token%}
     <input type="submit" class="btn btn-primary" value="add these users">
   </form>
+  
   {%for user in user_added%}
   <div class="alert alert-success col-md-4 mt-3">
     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-    {{user}} added sucessfuly
+    A request sent to {{user}}.
   </div>
   {%endfor%}
   {%for user in user_exists%}
@@ -31,7 +32,12 @@
     {{user}} not found
   </div>
   {%endfor%}
-
+  {%for message in messages%}
+  <div class="alert alert-warning col-md-4 mt-3">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+     {{ message }}
+  </div>
+  {%endfor%}
   <!-- {% if form.errors %}
     {% for field in form %}
         {% for error in field.errors %}

@@ -13,6 +13,11 @@ class Request(models.Model):
     team = models.ForeignKey('Team', on_delete=models.CASCADE, related_name='reqtou', default=None, null=True)
     date = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return 'req from {} to {}'.format(self.from_user, self.to_user)
+
+    class Meta:
+        ordering = ('-date',)
 
 class TeamTask(models.Model):
     STATUS_CHOICES = [
