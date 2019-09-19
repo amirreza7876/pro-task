@@ -31,13 +31,13 @@ def user_login(request):
                                          password=cd['password'])
             if user is not None:
                 if user.is_active:
-                    if not user.team_creator.all():
-                        login(request, user)
-                        if user.is_authenticated:
-                            return redirect('main:team_register')
-                    else:
-                        login(request, user)
-                        return redirect('main:index')
+                    # if not user.team_creator.all():
+                    #     login(request, user)
+                    #     if user.is_authenticated:
+                    #         return redirect('main:team_register')
+
+                    login(request, user)
+                    return redirect('main:index')
                 else:
                     return HttpResponse('disabled account')
             else:
@@ -55,7 +55,11 @@ def register(request):
             new_user = user_form.save(commit=False)
             new_user.set_password(user_form.cleaned_data['password'])
             new_user.save()
-            return render(request, 'account/reg_success.html', {'new_user': new_user})
+            if new_user:
+                login(request, new_user)
+                return redirect('main:team_register')
+
+            # return render(request, 'account/reg_success.html', {'new_user': new_user})
     else:
         user_form = UserRegistrationForm()
     return render(request, 'account/register.html', {'user_form':user_form})

@@ -9,12 +9,22 @@ class LoginForm(forms.Form):
 
 
 class UserRegistrationForm(forms.ModelForm):
-    password = forms.CharField(label='Password', widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Repeat password', widget=forms.PasswordInput)
+    password = forms.CharField(label='', widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
+    password2 = forms.CharField(label='', widget=forms.PasswordInput(attrs={'placeholder': ' Repeat password'}))
 
     class Meta:
         model = User
         fields = ('username', 'first_name', 'email')
+        widgets = {
+            'username': forms.TextInput(attrs={'placeholder': 'Username'}),
+            'first_name': forms.TextInput(attrs={'placeholder': 'First Name'}),
+            'email': forms.TextInput(attrs={'placeholder': 'Email'}),
+        }
+        labels = {
+            'username': '',
+            'first_name': '',
+            'email': ''
+        }
 
     def cleaned_password(self):
         cd = self.cleaned_data

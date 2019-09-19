@@ -78,7 +78,8 @@ def add_member(request, id):
                             offer = Request(text='{} wants you to join to {} team in WWW.EXAMPLE.COM\
                                                     if you want to accept this invitation click on bellow\
                                                     link....'.format(request.user, team.name),
-                                            from_user=request.user, to_user=user, team=request.user.team_creator.get())
+                                            from_user=request.user, to_user=user,
+                                            team=request.user.team_creator.get())
 
                             if user.offers.all():
                                 for ofr in user.offers.all():
@@ -89,12 +90,13 @@ def add_member(request, id):
                                         offer.save()
                             else:
                                 offer.save()
+
                             if sent:
                                 messages.error(request,'a request was sent before')
                             if not sent:
                                 user_added.append(username)
-                        team.save()
 
+                        team.save()
                     except ObjectDoesNotExist as not_found:
                         user_not_found.append(username)
                 return render(request, 'main/search_user_forgp.html',
@@ -104,7 +106,6 @@ def add_member(request, id):
                               'success_users': username,
                               'user_exists': user_exists,
                               'user_added': user_added})
-                # return redirect('main:team_detail', id=team.id)
         else:
             form = SearchUserForm()
             return render(request, 'main/search_user_forgp.html', {'form': form,'team':team})

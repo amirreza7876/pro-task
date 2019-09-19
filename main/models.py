@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User, Group
 from django.urls import reverse
+import random
+import string
 
 
 User.add_to_class("company_name", models.CharField(max_length=128, null=True, blank=True))
@@ -54,6 +56,11 @@ class TeamTask(models.Model):
 
 
 class Team(models.Model):
+    def randomString(strlen=20):
+        letters = string.ascii_lowercase
+        return ''.join(random.choice(letters) for i in range(strlen))
+
+    search_id = models.CharField(max_length=40, default=randomString())
     secret_key = models.CharField(max_length=128, default='secret')
     member = models.ManyToManyField(User, related_name='workat')
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='team_creator')
