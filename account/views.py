@@ -10,16 +10,16 @@ from django.contrib.auth import authenticate, login
 from .forms import LoginForm, UserRegistrationForm
 
 
-@login_required
-def profile_detail(request, username):
-    user = get_object_or_404(User, username=username)
-    tasks = SingleTask.objects.filter(active=True, user=user)
-    context = {
-        'tasks': tasks,
-        'this_user': user,
-        'section': 'people',
-    }
-    return render(request, 'account/user/detail.html', context)
+# @login_required
+# def profile_detail(request, username):
+#     user = get_object_or_404(User, username=username)
+#     tasks = SingleTask.objects.filter(active=True, user=user)
+#     context = {
+#         'tasks': tasks,
+#         'this_user': user,
+#         'section': 'people',
+#     }
+#     return render(request, 'account/user/detail.html', context)
 
 
 def user_login(request):
@@ -67,22 +67,20 @@ def register(request):
 
 @login_required
 def dashboard(request):
-    # groups = user.groups_in.all()
-    # followings = user.following.all()[:10]
-    # followers = user.followers.all()[:10]
     user = request.user
-    return render(request, 'account/user/dashboard.html', {'user': user,})
-    if user.workat.get() or user.team_creator.get():
+    if user.workat.all():
         team_in = user.workat.get()
-        team_creator = user.team_creator.get()
         return render(request, 'account/user/dashboard.html', {'user': user,
                                                                'team': team_in,
-                                                               # 'team_own': team,
-                                                               'team_creator': team_creator
-                                                               # 'groups': groups,
-                                                                # 'followings': followings,
-                                                                # 'followers': followers,
                                                                 })
+    elif user.team_creator.all():
+        team_creator = user.team_creator.get()
+        return render(request, 'account/user/dashboard.html', {'user': user,
+                                                               'team_creator': team_creator
+                                                                })
+    elif not user.team_creator.all() or not user.workat.all():
+        return render(request, 'account/user/dashboard.html', {'user': user,
+                                                               'empty_team': 'You don\'t have any team'})
 #
 #
 # @login_required

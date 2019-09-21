@@ -12,9 +12,11 @@ urlpatterns = [
     path('register_team/', views.team_register, name='team_register'),
     path('team/<int:id>/', views.team_detail, name='team_detail'),
     # path('teams/', views.user_teams, name='user_teams'),
-    path('add-member/group/<int:id>/', views.add_member, name='add_member'),
+    path('add-member/team/<int:id>/', views.add_member, name='add_member'),
     path('offers/', views.show_offers, name='show_offers'),
     path('join/team/<int:id>/', views.accept_invite, name='accept_invite'),
+    path('remove-user/<int:id>/', views.remove_user, name='remove_user'),
+    path('search-by-id/', views.search_team, name='search_team'),
     # path('create/group-task/<int:id>/', views.create_group_task, name='create_group_task'),
     # path('remove-member/<int:user_id>/group/<int:group_id>/', views.remove_user, name='remove_user')
 ]

@@ -53,3 +53,15 @@ class GroupTaskCreateForm(forms.ModelForm):
     class Meta:
         model = TeamTask
         fields = ('text', 'done')
+
+
+class SearchForTeam(forms.ModelForm):
+    class Meta:
+        model = Team
+        fields = ('search_id',)
+        widgets = {
+            'search_id': forms.TextInput(attrs={'placeholder': 'Your Team ID'})
+        }
+        labels = {
+            'search_id': ''
+        }

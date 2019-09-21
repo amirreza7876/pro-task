@@ -5,7 +5,7 @@ import random
 import string
 
 
-User.add_to_class("company_name", models.CharField(max_length=128, null=True, blank=True))
+# User.add_to_class("company_name", models.CharField(max_length=128, null=True, blank=True))
 
 
 class Request(models.Model):
@@ -47,9 +47,9 @@ class TeamTask(models.Model):
 
     def __str__(self):
         return 'task by {}'.format(self.user)
-
-    def get_absolute_url(self):
-        return reverse('main:single_task', args=[self.id])
+    # 
+    # def get_absolute_url(self):
+    #     return reverse('main:single_task', args=[self.id])
 
     class Meta:
         ordering = ('-created_date',)

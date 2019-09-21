@@ -10,5 +10,6 @@
     {{form.as_p}}
     {%csrf_token%}
     <p><input type="submit" name="" value="register co"></p>
+    <p>Are you looking for your team that created before? <a href="{%url 'main:search_team'%}">Click here</a></p>
   </form>
 {%endblock%}

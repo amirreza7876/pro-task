@@ -9,7 +9,14 @@
 
 {%block body%}
 <!-- <script src="{%static 'js/main.js'%}"></script> -->
-<h4>Team offers</h4>
+{%if messages%}
+  {%for message in messages%}
+  <div class="alert alert-warning">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+     {{ message }}
+  </div>
+  {%endfor%}
+{%endif%}
 {%if not user.workat.all%}
   {%if offers%}
     {%for offer in offers%}

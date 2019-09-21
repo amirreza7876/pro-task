@@ -7,16 +7,18 @@ from .models import *
 from .forms import *
 from django.urls import reverse_lazy
 from django.http import HttpResponse
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 import re
+
 
 class IndexView(TemplateView):
     template_name = 'main/index.html'
 
+
 @login_required
 def team_register(request):
     user = request.user
-    if not user.team_creator.all():
+    if not user.team_creator.all() and not user.workat.all():
         if request.method == 'POST':
             team_form = CompanyCreateForm(request.POST)
             if team_form.is_valid():
@@ -28,27 +30,42 @@ def team_register(request):
                 return render(request, 'main/team_detail.html', {'team': team})
         else:
             team_form = CompanyCreateForm()
+    elif user.workat.all():
+        messages.error(request, 'you already have a team')
+        return redirect('main:team_detail', user.workat.get().id)
+
     else:
         messages.error(request,'you already have a team')
         return redirect('main:team_detail', user.team_creator.get().id)
         # return render(request, 'main/company_detail.html', {'error': 'error'})
-    return render(request, 'main/company_registration.html', {'form':team_form})
+    return render(request, 'main/company_registration.html', {'form': team_form})
+
 
 @login_required
 def team_detail(request, id):
     team = get_object_or_404(Team, id=id)
-    if request.user in team.member.all():
-            return render(request, 'main/team_detail.html', {'team': team})
+    if request.user in team.member.all() or request.user == team.creator:
+        if request.user not in team.member.all():
+            team.member.add(request.user)
+        return render(request, 'main/team_detail.html', {'team': team})
     elif request.user not in team.member.all():
         if request.method == 'POST':
             join_form = MemberJoinForm(request.POST)
             if join_form.is_valid():
                 form = join_form.cleaned_data
                 if form['secret_key'] == team.secret_key:
-                    team.member.add(request.user)
-                    return redirect('main:team_detail', id=team.id)
+                    if not request.user.workat.get():
+                        team.member.add(request.user)
+                        return redirect('main:team_detail', id=team.id)
+                    else:
+                        messages.error(request, 'you already have a team')
+                        return redirect('main:team_detail', request.user.workat.get().id)
                 else:
-                    return redirect('account:dashboard')
+                    if not request.user.workat.all():
+                        return redirect('account:dashboard')
+                    else:
+                        messages.error(request, 'you already have a team')
+                        return redirect('main:team_detail',  request.user.workat.get().id)
         else:
             join_form = MemberJoinForm()
     return render(request, 'main/join_to_co.html', {'form': join_form})
@@ -59,7 +76,7 @@ def add_member(request, id):
     token_generator = default_token_generator
     print(token_generator)
     team = get_object_or_404(Team, id=id)
-    if request.user in team.member.all() or request.user == team.creator:
+    if request.user == team.creator:
         if request.method == 'POST':
             form = SearchUserForm(request.POST)
             if form.is_valid():
@@ -109,6 +126,9 @@ def add_member(request, id):
         else:
             form = SearchUserForm()
             return render(request, 'main/search_user_forgp.html', {'form': form,'team':team})
+    elif request.user in team.member.all():
+        messages.error(request, 'you are not admin')
+        return redirect('main:team_detail', team.id)
     else:
         return render(request, 'main/custom.html', {'not_member': 'you are not member of this team',})
 
@@ -124,17 +144,70 @@ def show_offers(request):
 def accept_invite(request, id):
     team = get_object_or_404(Team, id=id)
     user = request.user
-    if user not in team.member.all():
-        team.member.add(user)
-        team.save()
-        offers_from_one_team = Request.objects.filter(team=user.workat.get())
-        for offer in offers_from_one_team:
-            offer.delete()
-        return redirect('main:team_detail', team.id)
+    if not user.workat.all():
+        print(user.id)
+        if user not in team.member.all():
+            if user.offers.all():
+                for req in Request.objects.filter(to_user=user):
+                    if team == req.team:
+                        team.member.add(user)
+                        team.save()
+                    else:
+                        for i in range(0,2):
+                            messages.error(request,'you have not any request from this team!')
+                            return redirect('account:dashboard')
+                if Request.objects.filter(to_user=user):
+                    offers_from_one_team = Request.objects.filter(team=user.workat.get(), to_user=user)
+                    for offer in offers_from_one_team:
+                        offer.delete()
+                return redirect('main:team_detail', team.id)
+            else:
+                messages.error(request, 'you haven\'t request from that team')
+                return redirect('main:show_offers')
+        else:
+            messages.error(request,'you already have a team')
+            return redirect('main:team_detail', team.id)
     else:
-        messages.error(request,'you already have a team')
-        return redirect('main:team_detail', team.id)
+        if user.workat.get():
+            messages.error(request,'you have not any request from this team! and furthermore you have a team')
+            return redirect('main:team_detail', user.workat.get().id)
+        # elif user.team_creator.get():
+        #     messages.error(request,'you have not any request from this team! and furthermore you have a team')
+        #     return redirect('main:team_detail', user.team_creator.get().id)
 
+
+
+@login_required
+def remove_user(request, id):
+    this_user = request.user
+    user = get_object_or_404(User, id=id)
+    team = this_user.team_creator.get()
+    if user in team.member.all():
+        if this_user == team.creator:
+            team.member.remove(user)
+            messages.error(request, 'User removed successfuly')
+            return redirect('main:team_detail', team.id)
+        else:
+            messages.error(request, 'You\'re not admin')
+            return redirect('main:team_detail', team.id)
+
+    else:
+        messages.error(request,'you\'re not member of that group!')
+        return redirect('main:index')
+
+@login_required
+def search_team(request):
+    if request.method == 'POST':
+        search_team_form = SearchForTeam(request.POST)
+        if search_team_form.is_valid():
+            team_id = search_team_form.cleaned_data['id']
+            team = get_object_or_404(Team, id=id)
+            print(team.name)
+            return HttpResponse(shzi)
+
+    else:
+        search_team_form = SearchForTeam(initial={'search_id': ''})
+        return render(request, 'main/search_for_team.html', {'form': search_team_form})
 
 
 # def accept_invitation(request,)
