@@ -10,6 +10,13 @@
     <h1>SLIDER</h1>
   </center>
   <div class="col-md-5 ">
+    {%for message in messages%}
+      <div class="alert alert-warning">
+        {{message}}
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+      </div>
+
+    {%endfor%}
     <h2>what is pro task</h2>
     <p class="text-justify">
       Lorem ipsum dolor sit amet, consectetur adipisicing elit,

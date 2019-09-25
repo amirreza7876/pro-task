@@ -42,19 +42,54 @@ def team_register(request):
 
 
 @login_required
+def add_task(request, id):
+    this_user = request.user
+    team = get_object_or_404(Team, id=id)
+    if this_user.workat.all():
+        if this_user in team.member.all():
+            if request.method == 'POST':
+                form = AddTask(request.POST)
+                if form.is_valid():
+                    new_task = TeamTask(user=this_user,
+                                        team=team,
+                                        title=form.cleaned_data['title'],
+                                        text=form.cleaned_data['text'],
+                                        priority=form.cleaned_data['priority'],
+                                        assignee=form.cleaned_data['assignee'],
+                                        status=form.cleaned_data['status'],
+                                        )
+                    new_task.save()
+                    return redirect('main:team_detail', id=team.id)
+                else:
+                    messages.error(request, 'something is wrong with your form information')
+                    return redirect('main:add_task', team.id)
+            else:
+                form = AddTask()
+                return render(request, 'main/add_task.html', {'form': form})
+        else:
+            messages.error(request, 'You are not member of the team')
+            return redirect('main:index')
+    else:
+        messages.error(request, 'You have not any team!')
+        return redirect('main:index')
+
+
+@login_required
 def team_detail(request, id):
     team = get_object_or_404(Team, id=id)
+    tasks = TeamTask.objects.filter(team=team)
     if request.user in team.member.all() or request.user == team.creator:
         if request.user not in team.member.all():
             team.member.add(request.user)
-        return render(request, 'main/team_detail.html', {'team': team})
+        return render(request, 'main/team_detail.html', {'team': team,
+                                                         'tasks': tasks,})
     elif request.user not in team.member.all():
         if request.method == 'POST':
             join_form = MemberJoinForm(request.POST)
             if join_form.is_valid():
                 form = join_form.cleaned_data
                 if form['secret_key'] == team.secret_key:
-                    if not request.user.workat.get():
+                    if not request.user.workat.all():
                         team.member.add(request.user)
                         return redirect('main:team_detail', id=team.id)
                     else:
@@ -66,6 +101,7 @@ def team_detail(request, id):
                     else:
                         messages.error(request, 'you already have a team')
                         return redirect('main:team_detail',  request.user.workat.get().id)
+
         else:
             join_form = MemberJoinForm()
     return render(request, 'main/join_to_co.html', {'form': join_form})
@@ -181,18 +217,31 @@ def accept_invite(request, id):
 def remove_user(request, id):
     this_user = request.user
     user = get_object_or_404(User, id=id)
-    team = this_user.team_creator.get()
-    if user in team.member.all():
-        if this_user == team.creator:
-            team.member.remove(user)
-            messages.error(request, 'User removed successfuly')
-            return redirect('main:team_detail', team.id)
-        else:
+    if this_user.workat.all():
+        try:
+            team = this_user.team_creator.get()
+        except Team.DoesNotExist:
             messages.error(request, 'You\'re not admin')
-            return redirect('main:team_detail', team.id)
+            return redirect('main:team_detail', this_user.workat.get().id)
 
+        if user in team.member.all():
+            if this_user == team.creator:
+                if user == team.creator:
+                    messages.error(request, 'You try to remove admin')
+                    return redirect('main:team_detail', team.id)
+                else:
+                    team.member.remove(user)
+                    messages.error(request, 'User removed successfuly')
+                    return redirect('main:team_detail', team.id)
+            else:
+                messages.error(request, 'You\'re not admin')
+                return redirect('main:team_detail', team.id)
+
+        else:
+            messages.error(request,'you\'re not member of that group!')
+            return redirect('main:index')
     else:
-        messages.error(request,'you\'re not member of that group!')
+        messages.error(request, 'you have no any team or own a team so you can not remove user from another team!')
         return redirect('main:index')
 
 @login_required
@@ -209,6 +258,16 @@ def search_team(request):
         search_team_form = SearchForTeam(initial={'search_id': ''})
         return render(request, 'main/search_for_team.html', {'form': search_team_form})
 
+
+@login_required
+def member_list(request, id):
+    this_user = request.user
+    team = get_object_or_404(Team, id=id)
+    if this_user in team.member.all():
+        return render(request, 'main/member_list.html', {'team': team})
+    else:
+        messages.error(request, 'you are not member of the team')
+        return redirect('main:index')
 
 # def accept_invitation(request,)
 #

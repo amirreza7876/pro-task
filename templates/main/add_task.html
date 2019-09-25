@@ -5,6 +5,13 @@
 {%endblock%}
 
 {%block body%}
+{%for message in messages%}
+  <div class="alert alert-warning col-md-5">
+    {{message}}
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+
+  </div>
+{%endfor%}
   <p>add task:</p>
   <form action="." method="post">
     {{form.as_p}}

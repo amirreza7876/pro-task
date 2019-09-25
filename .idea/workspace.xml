@@ -2,18 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="afe2297f-6d4f-4273-9f2e-a0fd1ba3f108" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/pro-task.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/pro-task.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/account/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/account/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/account/user/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/account/user/dashboard.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/main/company_registration.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/main/company_registration.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/main/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/main/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/account/user/list.html" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/main/show_offers.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/main/show_offers.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/main/team_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/main/team_detail.html" afterDir="false" />
     </list>
@@ -50,7 +42,7 @@
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">

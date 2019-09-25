@@ -7,8 +7,13 @@
 
 {%block body%}
 {%if user.team_creator.get%}
-<a href="{%url 'main:add_member' team.id%}">Add member</a>
+<ul>
+  <li><a href="#">Admin Panel</a></li>
+  <li><a href="{%url 'main:add_member' team.id%}">Add member</a></li>
+  <li><a href="{%url 'main:member_list' team.id%}">Members</a></li>
+</ul>
 {%endif%}
+
 {%if messages%}
   {%for message in messages%}
   <div class="alert alert-warning">
@@ -17,16 +22,38 @@
   </div>
   {%endfor%}
 {%endif%}
+
 {%if error%}
   <p id='invalid_login'>You already have a Team</p>
 {%endif%}
   <h2>{{team.name}}</h2>
-  <p>team members  are:</p>
-  {%for member in team.member.all %}
-    <p>{{member.username}}
-      {%if user.team_creator.get%}
-      <a href="{%url 'main:remove_user' member.id%}">remove</a>
-      {%endif%}
-    </p>
+  <p><a href="{%url 'main:add_task' team.id%}" class="btn btn-primary" role="button">Add Task</a></p>
+  {%for task in tasks%}
+    <div class="col-md-6">
+      <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+        <div class="col p-4 d-flex flex-column position-static">
+          <div class="row">
+            <div class="col-md-6">
+              <h3 class="mb-0">{{task.title}}</h3>
+              <div class="mb-1 text-muted">{{task.created_date}}</div>
+              <p class="card-text mb-auto">{{task.text}}</p>
+              <a href="#" class="stretched-link">Edit</a>
+            </div>
+            <div class="col-md-6">
+              {{task.get_status_display}}
+              <br>
+              {{task.get_priority_display}}
+              <br>
+              <br>
+              {%if task.assignee%}
+                <p><a href="#">{{task.assignee}}</a> have to do it</p>
+              {%endif%}
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
   {%endfor%}
 {%endblock%}

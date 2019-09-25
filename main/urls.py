@@ -3,7 +3,7 @@ from . import views
 app_name = 'main'
 
 urlpatterns = [
-    # path('create-task/', views.create_task, name='create_task'),
+    path('add-task/<int:id>/', views.add_task, name='add_task'),
     # path('edit-task/<int:id>/', views.edit_task, name='single_task'),
     # path('create/group/', views.group_create, name='group_create'),
     # path('mygroups/', views.user_groups, name='user_groups'),
@@ -17,6 +17,7 @@ urlpatterns = [
     path('join/team/<int:id>/', views.accept_invite, name='accept_invite'),
     path('remove-user/<int:id>/', views.remove_user, name='remove_user'),
     path('search-by-id/', views.search_team, name='search_team'),
+    path('members/team/<int:id>/', views.member_list, name='member_list'),
     # path('create/group-task/<int:id>/', views.create_group_task, name='create_group_task'),
     # path('remove-member/<int:user_id>/group/<int:group_id>/', views.remove_user, name='remove_user')
 ]

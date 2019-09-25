@@ -17,7 +17,8 @@
   </div>
   {%endfor%}
 {%endif%}
-{%if not user.workat.all%}
+
+{%if not user.workat.all and not user.team_creator.all%}
   {%if offers%}
     {%for offer in offers%}
       <div id="offer">
@@ -28,7 +29,7 @@
   {%else%}
     <p>there is no offer to you</p>
   {%endif%}
-{%else%}
+{%elif user.workat.all or user.team_creator.all%}
   <p class="lead font-weight-normal">You have a team</p>
 {%endif%}
 <hr>

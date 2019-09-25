@@ -49,10 +49,10 @@ class SearchUserForm(forms.Form):
                                             know what to call you!'})
 
 
-class GroupTaskCreateForm(forms.ModelForm):
-    class Meta:
-        model = TeamTask
-        fields = ('text', 'done')
+# class GroupTaskCreateForm(forms.ModelForm):
+#     class Meta:
+#         model = TeamTask
+#         fields = ('text', 'done')
 
 
 class SearchForTeam(forms.ModelForm):
@@ -64,4 +64,20 @@ class SearchForTeam(forms.ModelForm):
         }
         labels = {
             'search_id': ''
+        }
+
+
+class AddTask(forms.ModelForm):
+    class Meta:
+        model = TeamTask
+        fields = ('title', 'text', 'status', 'priority', 'assignee')
+        labels = {'title': '',
+                  'text': '',
+                  'status': 'Status',
+                  'priority': 'Priority',
+                  'assignee': '',
+        }
+        widgets = {'text': forms.TextInput(attrs={'placeholder': 'text'}),
+                  'title': forms.TextInput(attrs={'placeholder': 'Title'}),
+                  'assignee': forms.TextInput(attrs={'type': 'email', 'placeholder': 'Email for assignee'})
         }

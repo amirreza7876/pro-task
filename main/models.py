@@ -28,26 +28,27 @@ class TeamTask(models.Model):
     ('ST', 'Stuck'),
     ]
     PRIORITY_CHOICES = [
-    ('M','Medium'),
-    ('H','High'),
-    ('L','Low'),
-    ('BE','Best effort'),
+    ('M', 'Medium'),
+    ('H', 'High'),
+    ('L', 'Low'),
+    ('BE', 'Best effort'),
     ]
     active = models.BooleanField(default=True)
     done = models.BooleanField(default=False)
     team = models.ForeignKey('Team', on_delete=models.CASCADE, related_name='team_tasks', default='')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks_created')
+    title = models.CharField(max_length=128, default='')
     text = models.TextField(max_length=512)
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
-    status = models.CharField(max_length=2, choices=STATUS_CHOICES, default='DN')
+    status = models.CharField(max_length=2, choices=STATUS_CHOICES, default='OD')
     priority = models.CharField(max_length=2, choices=PRIORITY_CHOICES, default='M')
-    assignee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks_todo', default=None, null=True)
+    assignee = models.EmailField(User, default=None, null=True, blank=True)
     # like = models.ManyToManyField(User, related_name='likes')
 
     def __str__(self):
         return 'task by {}'.format(self.user)
-    # 
+    #
     # def get_absolute_url(self):
     #     return reverse('main:single_task', args=[self.id])
 
